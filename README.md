@@ -217,17 +217,19 @@ This is useful because the LLM does not need to guess counts or calculate datase
 
 ## 📸 Project Outputs
 
-### 1. Sample Model Prediction
 
-The trained model predicts the object's class and location using a bounding box.
+### 1. Dataset Audit Results
 
-![Sample Model Prediction](data/outputs/sample_prediction.jpg)
+The dataset auditor validates image annotations and bounding boxes. The results show 400 images and annotations in the first audit, with no malformed annotations or invalid bounding boxes reported.
 
-### 2. Dataset Audit Results
+![Dataset Audit Results](data\show_result\Screenshot01.png)
 
-The dataset audit validates the image annotations and bounding boxes to identify potential data quality issues.
+### 2. Final Pipeline Verification
 
-![Dataset Audit Results](data/outputs/dataset_audit.png)
+The final verification script validates the dataset and checks bounding-box dimensions, image references, and category annotations. The displayed results show 401 images and annotations, with no malformed annotations, out-of-bounds boxes, invalid box dimensions, or missing image references.
+
+![Final Pipeline Verification](data\show_result\Screenshot02.png)
+
 
 
 *Note: The local Python audit functions work without an LLM API call. Natural-language AI responses depend on the configured API and its availability.*
@@ -335,3 +337,5 @@ B.E. Artificial Intelligence and Data Science
 ---
 
 ⭐ *Built as part of the Augle AI Internship Assignment — AI/ML Engineering Track.*
+#   A I _ A s s e s s m e n t  
+ 
