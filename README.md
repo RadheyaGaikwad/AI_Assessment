@@ -1,269 +1,285 @@
-# 🧍 Human Pose Data Pipeline: Scrape → Auto-Label → Train → Audit
+# 🧍 Human Pose Image Pipeline — Data Curation, Deep Learning & AI Auditing
 
-An end-to-end AI/ML project built for the **Augle AI Internship Assignment**.
+An end-to-end AI/ML engineering project developed for the **Augle AI Internship Assignment**. This project combines browser automation, vision-based annotation, custom deep learning, model evaluation, and LLM-powered dataset auditing in one reproducible pipeline.
 
-This project automates the process of collecting human images from the internet, identifying people in those images, training a custom deep learning model, and checking whether the dataset and training results are reliable.
+The goal is to automate the journey from collecting human images to generating annotations, training a custom CNN, evaluating predictions, and auditing dataset quality with Python tools and a Large Language Model (LLM).
 
-Instead of doing everything manually, I connected different tools to create an automated AI pipeline.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/Deep%20Learning-PyTorch-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Computer Vision](https://img.shields.io/badge/Computer%20Vision-OpenCV-green)](https://opencv.org/)
+[![Automation](https://img.shields.io/badge/Automation-Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
+[![AI](https://img.shields.io/badge/AI-RAG%20%7C%20LLM-purple)](https://en.wikipedia.org/wiki/Retrieval-augmented_generation)
+
+## 📌 Table of Contents
+
+- [Project Overview](#-project-overview)
+- [Pipeline Architecture](#-pipeline-architecture)
+- [Project Outputs](#-project-outputs)
+- [Technology Stack](#-technology-stack)
+- [Project Structure](#-project-structure)
+- [How It Works](#-how-it-works)
+- [Installation](#-installation-and-setup)
+- [Running the Pipeline](#-running-the-pipeline)
+- [Validation and Evaluation](#-validation-and-evaluation)
+- [Limitations and Future Improvements](#-limitations-and-future-improvements)
+- [Key Learnings](#-key-learnings)
+- [Author](#-author)
 
 ## 🚀 Project Overview
 
-The project has three main phases:
+The pipeline consists of three main phases:
 
-| Phase | What it does | Technology used |
+| Phase | Objective | Main Technologies |
 |---|---|---|
-| 📥 Phase 1: Data Collection | Collects human images from the internet and creates bounding-box annotations | Playwright, Python, Grounding DINO |
-| 🧠 Phase 2: Model Training | Prepares images and trains a CNN model to predict a person's location | OpenCV, PyTorch |
-| 🤖 Phase 3: Data Auditing | Checks dataset quality and answers questions about training results | Python, LLM API, RAG, Tool Calling |
+| 📥 Data Collection & Annotation | Collect human images and generate person bounding boxes | Python, Playwright, Grounding DINO |
+| 🧠 Model Training & Evaluation | Preprocess images, train a custom CNN, and evaluate predictions | OpenCV, PyTorch, NumPy |
+| 🤖 AI-Powered Dataset Auditing | Validate annotations, inspect metrics, and answer questions using retrieved project data | Python, LLM API, RAG, tool calling |
 
-### 🔄 How the Project Works
+**Core workflow**
 
-**Collect Images → Detect People → Create Annotations → Validate Data → Train Model → Evaluate Results → Audit with AI**
+`Collect Images → Detect People → Generate Annotations → Validate Dataset → Train CNN → Evaluate Model → Audit Results`
 
-Each phase uses the output of the previous phase.
+The project demonstrates how multiple AI/ML components can be connected into a single engineering workflow.
+
+## 🔄 Pipeline Architecture
+
+```mermaid
+flowchart TD
+    A[Wikimedia Commons] --> B[Playwright Image Collection]
+    B --> C[Image Filtering and Storage]
+    C --> D[Grounding DINO Detection]
+    D --> E[Bounding-Box Annotations]
+    E --> F[COCO JSON Validation]
+    F --> G[PyTorch Dataset]
+    G --> H[Custom CNN Training]
+    H --> I[Model Evaluation]
+    I --> J[Predictions and Metrics]
+    F --> K[Python Audit Functions]
+    J --> K
+    K --> L[RAG Retrieval]
+    L --> M[LLM and Tool Calling]
+    M --> N[Natural-Language Audit Answers]
+```
+
+## 📸 Project Outputs
+
+The following screenshots are saved in the repository and embedded directly into this README.
+
+### 1. Dataset Audit Results
+
+This audit report shows the dataset and annotation validation results from an audit run, including checks for malformed annotations and invalid bounding boxes.
+
+![Dataset Audit Results — Screenshot 01](data/show_result/Screenshot01.png)
+
+### 2. Final Pipeline Verification
+
+This verification report checks image references, annotation structure, bounding-box dimensions, and whether boxes fall outside image boundaries.
+
+![Final Pipeline Verification — Screenshot 02](data/show_result/Screenshot02.png)
+
+> **Note on reported counts:** The saved reports show 400 images and annotations in the first audit and 401 in the final verification. These are outputs from separate runs or stages; rerun both checks against the same final dataset if you need a single consistent count.
+
+## 🛠️ Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| Python | Main programming language |
+| Playwright | Browser automation and image-page collection |
+| Grounding DINO | Text-prompt-based person detection |
+| OpenCV | Image loading, resizing, and preprocessing |
+| PyTorch | Custom CNN architecture and model training |
+| COCO JSON | Structured storage for images, categories, and bounding-box annotations |
+| NumPy and Pandas | Numerical processing and metrics handling |
+| LLM API | Natural-language interpretation of audit questions |
+| Retrieval-Augmented Generation (RAG) | Retrieves relevant project information before generating responses |
+| Python tool calling | Executes audit functions for data-driven answers |
+| Git and GitHub | Version control and project hosting |
 
 ## 📁 Project Structure
 
 ```text
-augle-ai-assessment/
-│
-├── collect_and_annotate.py    # Collects images from the web
-├── setup_clean_images.py      # Alternative image downloading script
-├── generate_annotations.py    # Creates COCO annotations
-├── dataset.py                 # Loads and prepares images
-├── train.py                   # Builds and trains the CNN
-├── inference_eval.py          # Tests the trained model
-├── final_verify.py            # Checks dataset correctness
-├── llm_auditor.py             # AI-based dataset auditor
-├── requirements.txt           # Required Python libraries
+AI_Assessment/
+├── collect_and_annotate.py
+├── setup_clean_images.py
+├── generate_annotations.py
+├── dataset.py
+├── train.py
+├── inference_eval.py
+├── final_verify.py
+├── llm_auditor.py
+├── requirements.txt
+├── README.md
 │
 └── data/
-    ├── raw_images/            # Downloaded images
-    ├── rejected_images/       # Images that failed filtering
-    ├── annotations/           # Annotation JSON files
-    ├── outputs/               # Sample prediction images
-    ├── metrics.csv             # Training results
-    └── model_checkpoint.pth   # Saved model weights
+    ├── raw_images/
+    │   └── pose_001.jpg ... pose_400.jpg
+    ├── annotations/
+    │   ├── annotations.json
+    │   └── image_review.csv
+    ├── models/
+    │   └── custom_pose_cnn.pth
+    ├── rag_cache/
+    │   └── document_embeddings.npz
+    ├── show_result/
+    │   ├── Screenshot01.png
+    │   └── Screenshot02.png
+    ├── metrics.csv
+    └── model_checkpoint.pth
 ```
 
-## ⚙️ Technologies Used
+*The structure above highlights the main files and artifacts. Additional files may exist in your local project.*
 
-- **Python:** Main programming language used to build the pipeline.
-- **Playwright:** Automates a web browser to collect image URLs from web pages.
-- **Grounding DINO:** Detects objects such as people in images without requiring a custom-trained detector.
-- **OpenCV:** Reads, resizes, and processes images.
-- **PyTorch:** Builds and trains the custom CNN model.
-- **COCO JSON:** Stores image information and bounding-box annotations in a standard format.
-- **LLM API:** Allows users to ask questions about dataset quality and training results in natural language.
-- **RAG:** Retrieves relevant project data before generating an answer.
-- **Tool Calling:** Allows the AI to request calculations from Python functions instead of guessing numerical results.
+## ⚙️ How It Works
 
-## 📥 Phase 1: Image Collection and Auto-Labeling
+### Phase 1 — Image Collection and Automatic Annotation
 
-### What does this phase do?
+**1. Collect images**
 
-The first step is to collect human images from the internet and identify where people appear in those images.
+Playwright automates browser interactions to discover image pages on Wikimedia Commons. Python handles downloading, duplicate filtering, and local file storage.
 
-### Step 1: Collect images using Playwright
+**2. Detect people**
 
-Playwright controls a browser automatically. My script opens Wikimedia Commons category pages, scrolls through the pages, collects image URLs, and downloads the images.
+Grounding DINO uses a text prompt such as `a person` to identify potential people in an image without training a detector specifically for this dataset.
 
-The script also removes duplicate URLs and filters out unsupported image formats.
+**3. Generate bounding boxes**
 
-**Why Playwright?**
-
-Manually downloading hundreds of images takes time. Browser automation makes the collection process faster and repeatable.
-
-### Step 2: Detect people using Grounding DINO
-
-Grounding DINO is a vision model that can detect objects based on text descriptions.
-
-For example, I can provide the prompt:
-
-`a person`
-
-The model examines an image and predicts where it finds a person.
-
-### Step 3: Create bounding boxes
-
-A **bounding box** is a rectangle drawn around an object.
-
-For example:
-
-- `x` = horizontal starting position
-- `y` = vertical starting position
-- `w` = width of the rectangle
-- `h` = height of the rectangle
-
-These values are stored in the format:
+Each detection provides a rectangle around the predicted object. A bounding box is represented as:
 
 `[x, y, width, height]`
 
-### Step 4: Save annotations in COCO JSON
+Here, `x` and `y` specify the top-left corner, while `width` and `height` specify the rectangle's dimensions.
 
-COCO JSON is a standard format for storing image details and object annotations.
+**4. Save and validate annotations**
 
-My annotation file stores:
+The annotation pipeline stores image metadata, category information, and bounding-box coordinates in COCO-style JSON. Validation checks help identify malformed annotations, invalid dimensions, missing image references, and boxes outside image boundaries.
 
-- Image filename, width, and height
-- Object category, such as `person`
-- Bounding-box coordinates
-- Annotation and image IDs
+**Output:** Collected images and structured annotations for training and auditing.
 
-The script also checks whether boxes fit within image boundaries and whether the image files can be read.
+### Phase 2 — Custom CNN Training and Evaluation
 
-**Output:** A collection of images and their corresponding annotations, ready for model training.
+**1. Image preprocessing**
 
-## 🧠 Phase 2: Dataset Preparation and Model Training
+The custom PyTorch Dataset loads images and corresponding annotations. OpenCV is used to resize images to `640 × 640`, convert BGR to RGB, and normalize pixel values.
 
-### Step 1: Load images using PyTorch
+Bounding-box coordinates must be transformed using the same resizing factors as the images.
 
-I created a custom PyTorch Dataset class in `dataset.py`.
+**2. Build a CNN from scratch**
 
-A Dataset class tells PyTorch how to load each image and find its corresponding annotation.
+The custom model, `MultiTaskCustomPoseCNN`, uses convolutional layers to learn visual features.
 
-OpenCV is used to read and resize images to `640 × 640` pixels. The image is converted from BGR to RGB and its pixel values are scaled to the range `0–1`.
+Its main components include:
 
-The bounding boxes are resized using the same horizontal and vertical scaling factors as the image.
-
-### Step 2: Build a CNN from scratch
-
-I created a custom CNN called `MultiTaskCustomPoseCNN`.
-
-**CNN (Convolutional Neural Network)** is a deep learning model that learns visual patterns from images.
-
-My model contains:
-
-- **Convolution layers:** Learn visual features such as edges, shapes, and body patterns.
-- **Batch Normalization:** Helps stabilize the learning process.
-- **ReLU:** Adds non-linearity so the network can learn more complex patterns.
-- **Max Pooling:** Reduces the size of feature maps.
-- **Adaptive Average Pooling:** Converts feature maps into a fixed-size representation.
-- **Fully Connected Layers:** Use the learned features to make predictions.
-- **Dropout:** Helps reduce overfitting by randomly disabling some neurons during training.
+- **Convolution layers:** Learn visual patterns and spatial features.
+- **Batch normalization:** Helps stabilize training.
+- **ReLU activation:** Introduces non-linearity.
+- **Max pooling:** Reduces spatial dimensions.
+- **Adaptive average pooling:** Produces a fixed-size feature representation.
+- **Fully connected layers:** Generate final predictions.
+- **Dropout:** Helps reduce overfitting.
 
 The model has two output heads:
 
-1. **Classification head:** Predicts the object class.
-2. **Bounding-box head:** Predicts the object's location.
+- **Classification head:** Predicts the target class.
+- **Bounding-box head:** Predicts the object's location.
 
-I used a custom CNN instead of a pretrained backbone to meet the assignment's requirement to build and train a model from scratch.
+The model is trained from scratch rather than using a pretrained CNN backbone, in line with the assignment's custom-model requirement.
 
-### Step 3: Train the model
+**3. Train the network**
 
-The training process follows this sequence:
+The training loop follows:
 
-`Forward Pass → Calculate Loss → Backpropagation → Update Weights`
+`Forward Pass → Loss Calculation → Backpropagation → Optimizer Update`
 
-- **Forward pass:** The image goes through the network to produce predictions.
-- **Loss:** Measures how different the predictions are from the target values.
-- **Backpropagation:** Calculates how the model's weights should change to reduce the loss.
-- **Optimizer:** Updates the model's weights.
-- **Learning rate scheduler:** Reduces the learning rate during training according to a schedule.
+The implementation uses Adam for optimization, Cross-Entropy Loss for classification, and Smooth L1 Loss for bounding-box regression. A learning-rate scheduler adjusts the learning rate during training.
 
-I use Adam as the optimizer, Cross-Entropy Loss for classification, and Smooth L1 Loss for bounding-box prediction.
+Training metrics are saved in `data/metrics.csv`, and model weights are saved in checkpoint files.
 
-The training script records the losses in `metrics.csv` and saves the best model checkpoint based on validation loss.
+**4. Evaluate predictions**
 
-### Step 4: Evaluate the model
+The evaluation script reports classification accuracy and normalized bounding-box Mean Absolute Error (MAE). It also generates prediction outputs for visual inspection.
 
-After training, `inference_eval.py` tests the model on validation images.
+Lower coordinate MAE generally indicates smaller coordinate errors, but it does not replace object-detection metrics such as Intersection over Union (IoU).
 
-It reports classification accuracy and normalized bounding-box coordinate MAE.
+**Output:** A trained CNN, saved checkpoints, training metrics, and evaluation artifacts.
 
-**MAE (Mean Absolute Error)** measures the average absolute difference between predicted and actual coordinates. Lower MAE generally means more accurate coordinates, but it does not measure overall object-detection quality by itself.
+### Phase 3 — LLM-Based Dataset Auditor
 
-The script also saves a sample prediction image so that the predicted box can be inspected visually.
+The auditing component helps inspect the dataset and training results through natural-language questions.
 
-**Output:** A trained model, training logs, evaluation results, and a sample prediction image.
+Example questions include:
 
-## 🤖 Phase 3: LLM-Based Dataset Auditor
-
-### What does this phase do?
-
-The final phase helps inspect the dataset and training results using natural-language questions.
-
-For example, a user can ask:
-
-- Are there any invalid bounding boxes?
 - How many annotations are available?
-- Are any boxes outside the image boundaries?
-- How did validation loss change during training?
-- Are there suspiciously small bounding boxes?
-
-### How does it work?
+- Are any bounding boxes invalid?
+- Are there image references missing from the annotation file?
+- What happened to the training or validation loss?
+- Which data-quality checks failed?
 
 **1. Data ingestion**
 
-The auditor reads the COCO annotation JSON and the training metrics CSV.
+The auditor reads the annotation JSON and training metrics CSV.
 
-**2. Python audit tools**
+**2. Python audit functions**
 
-I created Python functions that check bounding-box validity, count categories, calculate box areas, and retrieve training metrics.
+Python functions perform calculations such as annotation counting, category summaries, bounding-box checks, and metric retrieval.
 
-**3. RAG (Retrieval-Augmented Generation)**
+**3. Retrieval-Augmented Generation (RAG)**
 
-RAG means retrieving relevant information from a data source before asking an LLM to generate an answer.
+RAG retrieves relevant information from the project's data before the LLM generates an answer. This helps ground responses in actual audit results rather than relying only on the model's general knowledge.
 
-In this project, the dataset and training logs provide the information needed to answer questions about the project.
+**4. Tool calling**
 
-**4. LLM and tool calling**
+When a question requires a calculation, the LLM can request an appropriate Python function. The function performs the calculation, and the LLM can explain the result in natural language.
 
-The LLM interprets the user's question and can request the appropriate Python audit function. Python performs the actual calculation, and the result can then be explained in natural language.
+Local audit functions can run independently of the LLM. Natural-language responses require the configured API provider to be available.
 
-This is useful because the LLM does not need to guess counts or calculate dataset statistics from memory.
+**Output:** An AI-assisted interface for understanding dataset quality and training results.
 
-**Output:** An interactive AI auditor that helps users understand dataset quality and training results.
+## 💻 Installation and Setup
 
-## 📸 Project Outputs
+### Prerequisites
 
-
-### 1. Dataset Audit Results
-
-The dataset auditor validates image annotations and bounding boxes. The results show 400 images and annotations in the first audit, with no malformed annotations or invalid bounding boxes reported.
-
-![Dataset Audit Results](data\show_result\Screenshot01.png)
-
-### 2. Final Pipeline Verification
-
-The final verification script validates the dataset and checks bounding-box dimensions, image references, and category annotations. The displayed results show 401 images and annotations, with no malformed annotations, out-of-bounds boxes, invalid box dimensions, or missing image references.
-
-![Final Pipeline Verification](data\show_result\Screenshot02.png)
-
-
-
-*Note: The local Python audit functions work without an LLM API call. Natural-language AI responses depend on the configured API and its availability.*
-
-## ▶️ How to Run the Project
+- Python installed on your system
+- Git
+- VS Code or another Python-compatible editor
+- Internet access for image collection and model downloads
+- An API key for the chosen LLM provider, if running the LLM features
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/augle-ai-assessment.git
-cd augle-ai-assessment
+git clone https://github.com/RadheyaGaikwad/AI_Assessment.git
+cd AI_Assessment
 ```
-
-Replace `<your-username>` with the actual GitHub username or repository owner.
 
 ### 2. Create a virtual environment
 
-```bash
+**Windows PowerShell**
+
+```powershell
 python -m venv .venv
-.venv\Scripts\activate
+.\.venv\Scripts\Activate.ps1
 ```
 
-A virtual environment keeps the project's Python dependencies separate from other projects.
+If PowerShell blocks activation, use the appropriate virtual-environment activation method for your system.
 
-### 3. Install the required libraries
+### 3. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 playwright install chromium
 ```
 
-### 4. Run the pipeline
+For PyTorch and other packages, follow the compatibility requirements of your Python version and hardware.
 
-Run each command from the project root in the following order:
+### 4. Configure the LLM API
+
+Set the API key using the environment-variable name expected by your selected provider and by `llm_auditor.py`.
+
+Never commit API keys, passwords, or `.env` files containing secrets to GitHub.
+
+## ▶️ Running the Pipeline
+
+Run commands from the project root. The following is the intended workflow; check each script's implementation and arguments before running it.
 
 ```bash
 python collect_and_annotate.py
@@ -274,56 +290,53 @@ python inference_eval.py
 python llm_auditor.py
 ```
 
-Set the LLM API key using the method required by your chosen provider before running the AI auditor. Never upload your API key to GitHub.
+**Important:** If image collection already creates annotations, check whether `generate_annotations.py` expects an intermediate detection cache such as `dino_cache.json`. Likewise, the auditor may need its own API configuration. Use the existing data files and script requirements rather than rerunning expensive stages unnecessarily.
 
-**Important:** The exact commands depend on the implementation of each script. If image annotations are not generated automatically by the collection script, make sure the Grounding DINO annotation step has been run and `dino_cache.json` is available before generating the COCO file.
+## 📊 Validation and Evaluation
 
-## 📊 Results and Validation
+The project includes checks for data quality and model behavior.
 
-The project includes checks to help identify data and training problems.
-
-| Check | Purpose |
+| Validation or metric | What it checks |
 |---|---|
-| Image validation | Finds unreadable or invalid images |
-| Bounding-box validation | Checks box dimensions and image boundaries |
-| COCO validation | Checks image references, category IDs, and annotation structure |
-| Training loss | Tracks how much prediction error changes over time |
-| Classification accuracy | Measures correct class predictions |
-| Bounding-box MAE | Measures coordinate prediction error |
-| Sample prediction | Helps visually inspect the model's output |
+| Image validation | Whether images can be opened and processed |
+| Annotation validation | Whether annotation records have valid structure |
+| Bounding-box validation | Whether boxes have valid dimensions and coordinates |
+| Image-reference validation | Whether annotations refer to existing images |
+| Training and validation loss | How prediction error changes during training |
+| Classification accuracy | The fraction of correctly classified examples |
+| Bounding-box MAE | Average absolute error in predicted box coordinates |
+| Visual prediction review | Whether model predictions appear reasonable in example images |
 
-The local audit report can also count annotations, check missing image references, and identify invalid coordinates.
-
-**Add your actual results here after running the complete pipeline.** Include the number of valid images, training and validation loss, classification accuracy, bounding-box MAE, and a sample prediction image.
+The saved screenshots demonstrate the validation reports produced by the project. Numerical model performance should be reported from the actual evaluation outputs rather than inferred from dataset validation alone.
 
 ## ⚠️ Limitations and Future Improvements
 
-Every machine learning project has limitations. The current implementation can be improved in the following ways:
+- **Annotation quality:** Review automatically generated boxes to identify false positives and missed detections.
+- **Detection evaluation:** Add IoU and other suitable detection metrics.
+- **Multiple people:** Extend the model to predict multiple objects in an image.
+- **Pose estimation:** Add keypoint annotations and a suitable keypoint model if the goal is full skeletal human-pose estimation.
+- **Data augmentation:** Apply transformations while updating bounding-box coordinates correctly.
+- **Training improvements:** Tune hyperparameters, use early stopping, and compare model configurations.
+- **Reproducibility:** Pin dependencies, document model versions, and record random seeds.
+- **Dataset consistency:** Ensure audit reports use the same final dataset and produce consistent counts.
+- **RAG evaluation:** Test retrieved evidence and generated answers against known audit results.
 
-- **Better annotations:** Review Grounding DINO predictions and remove incorrect labels.
-- **Data augmentation:** Add image rotation, scaling, and translation while correctly transforming the bounding boxes.
-- **More training:** Experiment with more epochs and suitable hyperparameters.
-- **Better evaluation:** Add Intersection over Union (IoU) and suitable detection metrics.
-- **Early stopping:** Stop training when validation performance no longer improves.
-- **More object classes:** Extend the model to distinguish standing, sitting, and kneeling poses.
-- **Experiment tracking:** Add TensorBoard or Weights & Biases to visualize training progress.
-- **Improved detection:** Support multiple people in one image instead of predicting only one box.
-- **Reproducibility:** Pin exact dependency versions and document the complete setup.
+**Scope clarification:** The current custom CNN predicts a class and bounding box. It is a person-localization pipeline, not a full skeletal keypoint pose-estimation system.
 
-## 📚 What I Learned
+## 📚 Key Learnings
 
-Through this project, I gained practical experience with:
+Through this project, I gained practical experience in:
 
-- Automating image collection using Playwright.
-- Understanding how zero-shot object detection works.
-- Creating and validating COCO annotations.
-- Working with image preprocessing and bounding-box geometry.
-- Building a custom CNN using PyTorch.
-- Implementing a training loop with backpropagation and an optimizer.
-- Tracking model performance using validation metrics.
-- Connecting Python audit tools with an LLM using tool calling.
-- Understanding how RAG can help an AI answer questions using project data.
-- Designing a multi-stage, reproducible AI/ML pipeline.
+- Browser automation and image collection.
+- Text-prompt-based object detection.
+- COCO-style annotation generation and validation.
+- Image preprocessing and bounding-box geometry.
+- Custom CNN development in PyTorch.
+- Loss calculation, backpropagation, and optimization.
+- Model evaluation and metrics interpretation.
+- Building Python-based dataset audit functions.
+- Connecting LLMs with project data using RAG and tool calling.
+- Organizing a multi-stage AI/ML engineering pipeline.
 
 ## 👨‍💻 Author
 
@@ -331,11 +344,9 @@ Through this project, I gained practical experience with:
 
 B.E. Artificial Intelligence and Data Science
 
-- GitHub: [RadheyaGaikwad](https://github.com/RadheyaGaikwad)
-- LinkedIn: [Radheya Gaikwad](https://linkedin.com/in/radhegaikwad/)
+- **GitHub:** [RadheyaGaikwad](https://github.com/RadheyaGaikwad)
+- **LinkedIn:** [Radheya Gaikwad](https://linkedin.com/in/radhegaikwad/)
 
 ---
 
-⭐ *Built as part of the Augle AI Internship Assignment — AI/ML Engineering Track.*
-#   A I _ A s s e s s m e n t  
- 
+⭐ Built for the **Augle AI Internship Assignment — AI/ML Engineering Track**.
